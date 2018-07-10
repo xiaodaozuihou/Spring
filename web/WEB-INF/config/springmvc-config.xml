@@ -20,4 +20,16 @@
         <property name="prefix" value="/WEB-INF/jsp/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="formatterRegistrars">
+            <set>
+                <bean class="com.spring.util.MyFormatterRegistrar">
+                    <constructor-arg type="java.lang.String" value="MM-dd-yyyy"/>
+                </bean>
+            </set>
+        </property>
+    </bean>
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="message"/>
+    </bean>
 </beans>
