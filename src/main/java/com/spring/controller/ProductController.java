@@ -1,17 +1,23 @@
 package com.spring.controller;
 
 import com.spring.model.Product;
-import com.spring.model.ProductForm;
 import com.spring.service.ProductService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class ProductController {
@@ -38,7 +44,7 @@ public class ProductController {
         return "ProductDetails";
     }*/
 
-   @RequestMapping(value = "/product_save", method = RequestMethod.POST)
+   /*@RequestMapping(value = "/product_save", method = RequestMethod.POST)
    public String saveProduct(ProductForm productForm, RedirectAttributes redirectAttributes){
        logger.info("saveProduct called");
        Product product = new Product();
@@ -49,6 +55,28 @@ public class ProductController {
        Product savedProduct = productService.add(product);
        redirectAttributes.addFlashAttribute("message","The product was successfully added.");
        return "redirect:/product_view/" + savedProduct.getId();
+   }*/
+
+   @RequestMapping(value = "/product_save")
+   public String saveProduct(HttpServletRequest servletRequest, @ModelAttribute Product product,
+                             BindingResult bindingResult, Model model) {
+       List<MultipartFile> files = product.getImages();
+       List<String> fileNames = new ArrayList<String>();
+       if (null != files && files.size() > 0) {
+           for (MultipartFile multipartFile : files) {
+               String fileName = multipartFile.getOriginalFilename();
+               fileNames.add(fileName);
+               File imageFile = new File(servletRequest.getServletContext().getRealPath("/WEB-INF/image"), fileName);
+               try {
+                   multipartFile.transferTo(imageFile);
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+           }
+       }
+       // save product here
+       model.addAttribute("product", product);
+       return "ProductDetails";
    }
 
     @RequestMapping(value = "/product_view/{id}")

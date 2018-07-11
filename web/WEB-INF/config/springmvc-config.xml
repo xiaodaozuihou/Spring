@@ -11,10 +11,12 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
     <context:component-scan base-package="com.spring.controller"/>
+    <context:component-scan base-package="com.spring.util"/>
     <context:component-scan base-package="com.spring.service"/>
     <mvc:annotation-driven/>
     <mvc:resources mapping="/css/ **" location="/css"/>
     <mvc:resources mapping="/ *.html" location="/"/>
+    <mvc:resources mapping="/image/ **" location="/WEB-INF/image/" />
     <bean id="viewResolver"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/jsp/"/>
@@ -30,6 +32,18 @@
         </property>
     </bean>
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-        <property name="basename" value="message"/>
+        <!--<property name="basenames">-->
+        <property name="basenames">
+            <list>
+                <value>messages</value>
+                <value>labels</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver">
+    </bean>
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="2000000"/>
     </bean>
 </beans>
